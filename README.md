@@ -45,7 +45,8 @@ enjoy  &&  have fun
  
 
  
-Spiffo's Zomboid Server Service Cente
+Spiffo's Zomboid Server Service Center
+
 Author: Nightmare @ http://n8m4re.de
 
 
