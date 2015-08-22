@@ -9,7 +9,7 @@ PZ_RESTART_AND_STOP_COUNTER=10
 ### STEAM ACCOUNT ###################
 STEAM_ACCOUNT="anonymous"	# anonymous steam account
 STEAM_PASS=""				# left empty for anonymous account
-STEAM_APP_ID=380870			# steam game appid: server files=380870 / client files=108600 
+STEAM_APP_ID=380870			# steam game appid: server files=380870 / client files=108600 (your account & pass is required)
 
 #############################################################################################################
 #	Script by Nightmare @ http://n8m4re.de																	#
