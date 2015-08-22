@@ -5,10 +5,11 @@ PZ_USER="pz-server1"				# server name
 PZ_ADMIN_PASSWORD="admin"			# admin account password ( needed on first start )
 PZ_RESTART_AND_STOP_COUNTER=10 		
 
-### STEAM ACCOUNT ( needed for install/updates ) ###################
-STEAM_ACCOUNT=""
-STEAM_PASS=""
 
+### STEAM ACCOUNT ###################
+STEAM_ACCOUNT="anonymous"	# anonymous steam account
+STEAM_PASS=""				# left empty for anonymous account
+STEAM_APP_ID=380870			# steam game appid: server files=380870 / client files=108600 
 
 #############################################################################################################
 #	Script by Nightmare @ http://n8m4re.de																	#
@@ -664,7 +665,7 @@ if [ "$(getent passwd ${STEAM_USER})" ] && [ "$(getent passwd ${PZ_USER})" ]; th
 
 				_spiffo_says 'Installing PZ - STABLE...'; sleep 2
 
-				_SteamUserExec "cd ${STEAM_DIR}; ./steamcmd.sh +login ${STEAM_ACCOUNT} ${STEAM_PASS} +force_install_dir ${PZ_DIR} +app_update 108600 -beta public validate +exit"
+				_SteamUserExec "cd ${STEAM_DIR}; ./steamcmd.sh +login ${STEAM_ACCOUNT} ${STEAM_PASS} +force_install_dir ${PZ_DIR} +app_update ${STEAM_APP_ID} -beta public validate +quit"
 
 				chown -Rh ${PZ_USER} ${PZ_DIR}
 
@@ -690,7 +691,7 @@ if [ "$(getent passwd ${STEAM_USER})" ] && [ "$(getent passwd ${PZ_USER})" ]; th
 
 				_spiffo_says 'Installing PZ - IWBUMS (BETA)...'; sleep 2
 
-				_SteamUserExec "cd ${STEAM_DIR}; ./steamcmd.sh +login ${STEAM_ACCOUNT} ${STEAM_PASS} +force_install_dir ${PZ_DIR} +app_update 108600 -beta iwillbackupmysave -betapassword iaccepttheconsequences validate +exit"
+				_SteamUserExec "cd ${STEAM_DIR}; ./steamcmd.sh +login ${STEAM_ACCOUNT} ${STEAM_PASS} +force_install_dir ${PZ_DIR} +app_update ${STEAM_APP_ID} -beta iwillbackupmysave -betapassword iaccepttheconsequences validate +quit"
 
 				chown -Rh ${PZ_USER} ${PZ_DIR}
 
