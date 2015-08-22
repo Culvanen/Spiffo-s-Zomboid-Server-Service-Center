@@ -256,78 +256,6 @@ _java_install_init() {
 	fi
 }
 
-_wheezy_install_init() {
-
-			_header_init
-
-			_spiffo_says "Beware! I have to install from an unstable/testing repository.";
-
-	if (_spiffo_request "Do you really want to install now?"); then
-
-	
-		if [ ! "$(grep "deb http://ftp.debian.org/debian testing main" /etc/apt/sources.list )" ]; then
-
-			#_spiffo_says 'Adding unstable repository'; sleep 2
-			#echo 'deb http://ftp.debian.org/debian sid main' >> /etc/apt/sources.list
-			
-			_spiffo_says 'Adding testing repository'; sleep 2
-			echo 'deb http://ftp.debian.org/debian testing main' >> /etc/apt/sources.list
-			
-		else
-		
-			#_spiffo_says 'Unstable repository detected'; sleep 2
-			#_spiffo_says 'Enable unstable repository'; sleep 2
-			#sed -i 's/#deb http\:\/\/ftp.debian.org\/debian sid main/deb http\:\/\/ftp.debian.org\/debian sid main/' /etc/apt/sources.list
-
-			_spiffo_says 'Testing repository detected'; sleep 2
-			_spiffo_says 'Enable testing repository'; sleep 2
-			sed -i 's/#deb http\:\/\/ftp.debian.org\/debian testing main/deb http\:\/\/ftp.debian.org\/debian testing main/' /etc/apt/sources.list
-
-		fi
-
-			_spiffo_says 'Please wait, installing libc packages'; sleep 2
-
-			apt-get update
-	
-			if [ "$(uname -m | grep 'x86_64')" ]; then
-					#apt-get -y -t unstable install libc6-i386 libc6 libc6-dev libc6-dbg linux-libc-dev gcc locales
-					apt-get -y -t testing install libc6-i386 libc6 libc6-dev libc6-dbg linux-libc-dev gcc locales
-				else
-					#apt-get -y -t unstable install libc6-i686 libc6 libc6-dev libc6-dbg linux-libc-dev gcc locales
-					apt-get -y -t testing install libc6-i686 libc6 libc6-dev libc6-dbg linux-libc-dev gcc locales
-			fi
-			
-			apt-get -f install
-
-			apt-get autoremove
-			
-			_header_init
-
-			#_spiffo_says 'Disabling unstable repository'; sleep 2
-			#sed -i 's/deb http\:\/\/ftp.debian.org\/debian sid main/#deb http\:\/\/ftp.debian.org\/debian sid main/' /etc/apt/sources.list
-
-			_spiffo_says 'Disabling testing repository'; sleep 2
-			sed -i 's/deb http\:\/\/ftp.debian.org\/debian testing main/#deb http\:\/\/ftp.debian.org\/debian testing main/' /etc/apt/sources.list
-
-			sleep 1
-
-			apt-get update
-
-			echo "check file, if packages installed" > .spiffo_debian_check
-
-			_header_init
-
-	else
-
-			clear
-
-			_spiffo
-
-			_spiffo_says "Goodbye and have a nice day!";
-
-			exit 0
-  fi
-}
 
 _server_info(){
 
@@ -735,17 +663,11 @@ _installer_init() {
 
 	if (_spiffo_request "Do you want to install now?"); then
 
-	
-			if [ ${CODNAME} == "wheezy" ] && [ ! -f ".spiffo_debian_check" ]; then
-				_wheezy_install_init
-			fi
-	
-	
 			if [ "$(uname -m | grep 'x86_64')" ] && [ ! "$(dpkg --list | grep 'lib32gcc1')" ]; then
 
 				_spiffo_says "Please wait, installing lib32gcc1..."; sleep 2
 
-				if [ ${CODNAME} == "wheezy" ] || [ ${CODNAME} == "jessie" ]; then  
+				if [ ${CODNAME} == "jessie" ]; then  
 					dpkg --add-architecture i386
 					apt-get update
 				fi
@@ -877,8 +799,8 @@ _run() {
 	local CODNAME=$(echo $CODNAME | sed 's/^ *//')
 
 	if [ ${DIST_ID} == "Debian" ]; then	
-		if [ ${CODNAME} != "wheezy" ] && [ ${CODNAME} != "jessie" ]; then
-			_spiffo_says "Your system is: ${DIST_ID} ${CODNAME} , but Debian -> Wheezy or Jessie is required!"
+		if [ ${CODNAME} != "jessie" ]; then
+			_spiffo_says "Your system is: ${DIST_ID} ${CODNAME} , but Debian 8 Jessie is required!"
 			exit 1
 		 fi
 	fi
