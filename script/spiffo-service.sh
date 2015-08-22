@@ -223,6 +223,14 @@ _java_install_init() {
 				_spiffo_says 'Java 7 is installed, but we need Java 8!'; sleep 3
 				_spiffo_says 'DeInstall oracle-java7 ...'; sleep 2
 				apt-get -y --purge autoremove oracle-java7-installer
+				apt-get -y --purge autoremove oracle-java7-set-default
+				echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
+				echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+				apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+				apt-get update
+				apt-get -y install oracle-java8-installer
+				apt-get -y install oracle-java8-set-default
+				
 			fi
 		fi 	
 			
@@ -327,7 +335,7 @@ _server_info(){
 		echo ''
 	if ( _server_running ) then
 	
-		local PID=$( ps aux | grep -v grep | grep -i "java -Djava.library.path=${PZ_DIR}" | awk '{print $2}' )
+		local PID=$( lsof -i  | grep -v grep | grep -i "${PZ_USER}" | awk '{print $2}' | head -1 )
 		
 		local CPU=$( ps S -p ${PID} -o pcpu= )
 		
@@ -350,7 +358,7 @@ _server_info(){
 }
 
 _server_running() {
-	if [ ! -n "$( ps aux | grep -v grep | grep -i "java -Djava.library.path=${PZ_DIR}")" ];
+	if [ ! -n "$(lsof -i  | grep -v grep | grep -i "${PZ_USER}" | awk '{print $2}' | head -1)" ];
 	then
 		return 1
 	else
@@ -358,30 +366,26 @@ _server_running() {
 	fi
 }
 
-_killServerPid(){
-			
-	local A=( `ps aux | grep -v grep | grep -i "SCREEN -L -AmdS ${PZ_USER}" | awk '{print $2}'` )
-	
-	local B=( `ps aux | grep -v grep | grep -i "${PZ_DIR}" | awk '{print $2}'` )
 
-	if [ -n ${A} ]; then
-		for pid in ${A};
-		do
-			kill ${pid}
-		done
-	elif [ -n ${B} ]; then
-		for pid in ${B};
-		do
-			kill ${pid}
-		done
-	fi
+		
+_killServerPid(){
+		
+	if ( _server_running ) then	
+		local PID1=$( ps aux | grep -v grep | grep -i "screen -A -m -d -L -S ${PZ_USER}" | awk '{print $2}' )
+		local PID2=$( lsof -i  | grep -v grep | grep -i "${PZ_USER}" | awk '{print $2}' )
+		
+		if [ -n ${PID1} ]; then
+			for pid1 in ${PID1};
+				do
+				kill ${pid1}
+			done
+		fi
+		
+		sleep 1
 	
-	sleep 1
-	
-	if ( _server_running ) then
-		for pid in ${B};
-		do
-			kill -9 ${pid}
+		for pid2 in ${PID2};
+			do
+			kill -9 ${pid2}
 		done
 	fi
 }
@@ -474,7 +478,7 @@ _server_init_restart() {
 					
 					_PZUserExec "screen -wipe"
 					
-					_PZUserExec "cd ${PZ_DIR}; screen -L -AmdS ${PZ_USER} ./start-server.sh"; sleep 1
+					_PZUserExec "cd ${PZ_DIR}; screen -A -m -d -L -S ${PZ_USER} ./start-server.sh"; sleep 1
 					
 					_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 					
@@ -518,7 +522,7 @@ _server_init_start(){
 				
 				_PZUserExec "screen -wipe"
 				
-				_PZUserExec "cd ${PZ_DIR}; screen -L -AmdS ${PZ_USER} ./start-server.sh"; sleep 1
+				_PZUserExec "cd ${PZ_DIR}; screen -A -m -d -L -S ${PZ_USER} ./start-server.sh"; sleep 1
 				
 				_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 				
