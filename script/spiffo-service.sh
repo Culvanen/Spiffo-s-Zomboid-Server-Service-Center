@@ -474,7 +474,7 @@ _server_init_restart() {
 					
 					_PZUserExec "screen -wipe"
 					
-					_PZUserExec "cd ${PZ_DIR}; screen -L -AmdS ${PZ_USER} ./projectzomboid-dedi-server.sh"; sleep 1
+					_PZUserExec "cd ${PZ_DIR}; screen -L -AmdS ${PZ_USER} ./start-server.sh"; sleep 1
 					
 					_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 					
@@ -518,7 +518,7 @@ _server_init_start(){
 				
 				_PZUserExec "screen -wipe"
 				
-				_PZUserExec "cd ${PZ_DIR}; screen -L -AmdS ${PZ_USER} ./projectzomboid-dedi-server.sh"; sleep 1
+				_PZUserExec "cd ${PZ_DIR}; screen -L -AmdS ${PZ_USER} ./start-server.sh"; sleep 1
 				
 				_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 				
