@@ -214,30 +214,30 @@ _java_install_init() {
 			_header_init
 
 			_spiffo_says 'Looking for Java..'; sleep 1
-
-		if [ ! "$(type java -version 2>/dev/null)" ]; then
-
-			_spiffo_says 'Damn java is not installed!'; sleep 1
-
-			_spiffo_says 'Installing oracle-java7 ...'; sleep 2
 			
-			#_spiffo_says 'Installing oracle-java8 ...'; sleep 2
-
+			local JAVA_INSTALLED=$(type java -version 2>/dev/null)
+		
+		if [ "$JAVA_INSTALLED" ]; then
+			local VER=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`	
+			if [ ! $VER == 8 ]; then
+				_spiffo_says 'Java 7 is installed, but we need Java 8!'; sleep 3
+				_spiffo_says 'DeInstall oracle-java7 ...'; sleep 2
+				apt-get -y --purge autoremove oracle-java7-installer
+			fi
+		fi 	
+			
+		if [ ! "$JAVA_INSTALLED" ]; then
+			_spiffo_says 'Damn java is not installed!'; sleep 3
+			#_spiffo_says 'Installing oracle-java7 ...'; sleep 2
+			_spiffo_says 'Installing oracle-java8 ...'; sleep 2
 			echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
-
 			echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
-
 			apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
-
 			apt-get update
-
-			apt-get -y install oracle-java7-installer
-			
-			#apt-get -y install oracle-java8-installer
-
-			apt-get -y install oracle-java7-set-default
-			
-			#apt-get -y install oracle-java8-set-default
+			#apt-get -y install oracle-java7-installer
+			apt-get -y install oracle-java8-installer
+			#apt-get -y install oracle-java7-set-default
+			apt-get -y install oracle-java8-set-default
 
 			_java_install_init
 	else
