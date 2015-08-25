@@ -3,7 +3,7 @@
 #### PZ SERVER  ####################################################
 PZ_USER="pz-server1"				# server name
 PZ_ADMIN_PASSWORD="admin"			# admin account password ( needed on first start )
-PZ_RESTART_AND_STOP_COUNTER=10 		
+PZ_RESTART_AND_STOP_COUNTER=5 		
 
 
 ### STEAM ACCOUNT ###################
@@ -219,18 +219,15 @@ _java_install_init() {
 		
 		if [ "$JAVA_INSTALLED" ]; then
 			local VER=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`	
-			if [ ! $VER == 8 ]; then
-				_spiffo_says 'Java 7 is installed, but we need Java 8!'; sleep 3
-				_spiffo_says 'DeInstall oracle-java7 ...'; sleep 2
-				apt-get -y --purge autoremove oracle-java7-installer
-				apt-get -y --purge autoremove oracle-java7-set-default
+			if [ $VER le 7 ]; then
+				_spiffo_says 'Java $VER is installed, but we need Java 8!'; sleep 3
+				_spiffo_says 'Installing oracle-java8 ...'; sleep 2
 				echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
 				echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
 				apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
 				apt-get update
 				apt-get -y install oracle-java8-installer
 				apt-get -y install oracle-java8-set-default
-				
 			fi
 		fi 	
 			
