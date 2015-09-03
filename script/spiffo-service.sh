@@ -11,6 +11,11 @@ STEAM_ACCOUNT="anonymous"	# anonymous steam account
 STEAM_PASS=""				# left empty for anonymous account
 STEAM_APP_ID=380870			# steam game appid: server files=380870 / client files=108600 (your account & pass is required)
 
+
+
+
+
+
 #############################################################################################################
 #	Script by Nightmare @ http://n8m4re.de																	#
 #																											#
@@ -209,41 +214,50 @@ _admin_command_menu_init(){
 	done
 }
 
+
+_java7(){
+
+		_spiffo_says 'Installing oracle-java7 ...'; sleep 2
+		echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
+		echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+		apt-get update
+		apt-get -y install oracle-java7-installer
+		apt-get -y install oracle-java7-set-default
+}
+
+_java8(){
+
+		_spiffo_says 'Installing oracle-java8 ...'; sleep 2
+		echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
+		echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+		apt-get update
+		apt-get -y install oracle-java8-installer
+		apt-get -y install oracle-java8-set-default
+}
+
+
+
 _java_install_init() {
 
 			_header_init
 
 			_spiffo_says 'Looking for Java..'; sleep 1
 			
-			local JAVA_INSTALLED=$(type java -version 2>/dev/null)
-		
-		if [ "$JAVA_INSTALLED" ]; then
-			local VER=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`	
-			if [ $VER le 7 ]; then
-				_spiffo_says 'Java $VER is installed, but we need Java 8!'; sleep 3
-				_spiffo_says 'Installing oracle-java8 ...'; sleep 2
-				echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
-				echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
-				apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
-				apt-get update
-				apt-get -y install oracle-java8-installer
-				apt-get -y install oracle-java8-set-default
-			fi
-		fi 	
+			local JAVA_VER=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`	
+		 
+			if [ -n "$JAVA_VER" ]; then
+				
+					if [ $JAVA_VER -le 7 ]; then
+						_spiffo_says 'Java $VER is installed, but we need Java 8!'; sleep 3
+						_java8
+					fi
+			fi 	
 			
-		if [ ! "$JAVA_INSTALLED" ]; then
+		if [ -z "$JAVA_VER" ]; then
 			_spiffo_says 'Damn java is not installed!'; sleep 3
-			#_spiffo_says 'Installing oracle-java7 ...'; sleep 2
-			_spiffo_says 'Installing oracle-java8 ...'; sleep 2
-			echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee /etc/apt/sources.list.d/webupd8team-java.list
-			echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' | tee -a /etc/apt/sources.list.d/webupd8team-java.list
-			apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
-			apt-get update
-			#apt-get -y install oracle-java7-installer
-			apt-get -y install oracle-java8-installer
-			#apt-get -y install oracle-java7-set-default
-			apt-get -y install oracle-java8-set-default
-
+			_java8
 			_java_install_init
 	else
 
@@ -403,11 +417,11 @@ _server_init_restart() {
 					
 					_PZUserExec "screen -wipe"
 					
-					_PZUserExec "cd ${PZ_DIR}; screen -A -m -d -L -S ${PZ_USER} ./start-server.sh"; sleep 1
+					_PZUserExec "cd ${PZ_DIR}; screen -A -m -d -L -S ${PZ_USER} ./start-server.sh -adminpassword ${PZ_ADMIN_PASSWORD}"; sleep 1
 					
-					_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
+					#_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 					
-					_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
+					#_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 				
 					_spiffo_says "back to main menu, please press enter.";
 					
@@ -447,11 +461,11 @@ _server_init_start(){
 				
 				_PZUserExec "screen -wipe"
 				
-				_PZUserExec "cd ${PZ_DIR}; screen -A -m -d -L -S ${PZ_USER} ./start-server.sh"; sleep 1
+				_PZUserExec "cd ${PZ_DIR}; screen -A -m -d -L -S ${PZ_USER} ./start-server.sh -adminpassword ${PZ_ADMIN_PASSWORD}"; sleep 1
 				
-				_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
+				#_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 				
-				_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
+				#_PZUserExec "screen -p 0 -S ${PZ_USER} -X eval 'stuff \"${PZ_ADMIN_PASSWORD}\"\015'"; sleep 0.1
 				
 				_spiffo_says "${PZ_USER} is starting.."; sleep 0.8
 
