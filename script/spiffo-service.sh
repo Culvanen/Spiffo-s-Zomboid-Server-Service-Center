@@ -608,7 +608,7 @@ if [ "$(getent passwd ${STEAM_USER})" ] && [ "$(getent passwd ${PZ_USER})" ]; th
 
 				_spiffo_says 'Installing PZ - STABLE...'; sleep 2
 
-				_SteamUserExec "cd ${STEAM_DIR}; ./steamcmd.sh +login ${STEAM_ACCOUNT} ${STEAM_PASS} +force_install_dir ${PZ_DIR} +app_update ${STEAM_APP_ID} -beta public validate +quit"
+				_SteamUserExec "cd ${STEAM_DIR}; ./steamcmd.sh +login ${STEAM_ACCOUNT} ${STEAM_PASS} +force_install_dir ${PZ_DIR} +app_update ${STEAM_APP_ID} -beta vehicle validate +quit"
 
 				chown -Rh ${PZ_USER} ${PZ_DIR}
 
